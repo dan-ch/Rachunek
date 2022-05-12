@@ -1,0 +1,22 @@
+import com.example.rachunek.dto.Cart
+import com.example.rachunek.dto.CartProduct
+import java.math.BigDecimal;
+
+dialect "mvel"
+
+rule "Discount for products while payment above 1000"
+    when cart: Cart(getTotalPrice() > 1000)
+    then cart.setDiscount(BigDecimal.valueOf(10D));
+end;
+
+rule "Czy istnieje produkt o nazwie Kokaina" salience 30
+    when cart: Cart(getProductByName("Kokaina"))
+    then
+end;
+//TODO mapa na liste zwykla
+//rule "Czy istnieje produkt o nazwie Kokaina" salience 20
+//    when product: Product(name="kox")
+//    then
+//end;
+
+
