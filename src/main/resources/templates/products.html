@@ -45,44 +45,32 @@
 <h2>Produkty</h2>
 
   <div class="container my-4 border border-3 rounded 2 px-2 border-secondary">
-    <div class="container border border-2 rounded-2 my-3 lh-lg" th:each="product:${products}">
-      <div class="row h-100">
-        <div class="col-lg-2 border border-1 text-center fw-bold">Nazwa:</div>
-        <div class="col-lg-4 border border-1 text-center" th:text="${product.name}"></div>
-        <div class="col-lg-2 border border-1 text-center fw-bold">Kategoria:</div>
-        <div class="col-lg-4 border border-1 text-center" th:text="${product.category}"></div>
-      </div>
-      <div class="row">
-        <div class="col-lg-2 border border-1 text-center fw-bold">Podatek:</div>
-        <div class="col-lg-2 border border-1 text-center" th:text="${product.tax.getValue() + '%'}"></div>
-        <div class="col-lg-2 border border-1 text-center fw-bold">Cena(netto):</div>
-        <div class="col-lg-2 border border-1 text-center" th:text="${product.netPrice} + zł"></div>
-        <div class="col-lg-2 border border-1 text-center fw-bold">Cena(brutto):</div>
-        <div class="col-lg-2 border border-1 text-center" th:text="${product.grossPrice} + zł"></div>
-      </div>
-      <div class="row">
-        <div class="col-lg-8 border border-1 text-center"></div>
-        <div class="col-lg-4 border border-1 text-center">
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th scope="col">Nazwa</th>
+        <th scope="col">Kategoria</th>
+        <th scope="col">Cena(netto)</th>
+        <th scope="col">Podatek</th>
+        <th scope="col">Cena(brutto)</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="product:${products}">
+        <td th:text="${product.name}"></td>
+        <td th:text="${product.category}"></td>
+        <td th:text="${product.netPrice} + ' zł'"></td>
+        <td th:text="${product.tax.getValue() + ' %'}"></td>
+        <td th:text="${product.grossPrice} + ' zł'"></td>
+        <td>
           <a class="btn btn-primary btn-md  px-4 py-0 m-1" style="min-width: 85px"
              th:href="@{'/cart/addProduct?id=' + ${product.id}}" role="button">Do koszyka</a>
-        </div>
-      </div>
-<!--      <div class="row ">-->
-
-<!--        <div class="col-lg-2 border border-1 text-center fw-bold">Lekarz:</div>-->
-<!--        <div class="col-lg-5 border border-1 text-center"-->
-<!--             th:text="${note.visit.doctor.firstName + ' ' + note.visit.doctor.lastName}"></div>-->
-<!--        <div class="col-lg-5 border border-1 text-center d-flex justify-content-around">-->
-<!--          <a class="btn btn-primary btn-md  px-4 py-0 m-1" style="min-width: 85px" target="_blank"-->
-<!--             th:href="@{/patient/notes/{id}/pdf (id=${note.id})}" role="button">Generuj PDF</a>-->
-<!--          <a class="btn btn-primary btn-md  px-4 py-0 m-1" style="min-width: 85px"-->
-<!--             th:href="@{/patient/notes/{id}/send (id=${note.id})}" role="button">Wyślij</a>-->
-<!--        </div>-->
-<!--      </div>-->
+        </td>
+      </tr>
+      </tbody>
+    </table>
     </div>
-  </div>
-
-
 </main>
 <footer>
 </footer>

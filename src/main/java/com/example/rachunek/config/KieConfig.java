@@ -17,7 +17,12 @@ public class KieConfig {
         KieServices kieServices = KieServices.Factory.get();
 
         KieFileSystem kieFileSystem = kieServices.newKieFileSystem();
+        kieFileSystem.write(ResourceFactory.newClassPathResource("rules/CartRules.drl"));
+        kieFileSystem.write(ResourceFactory.newClassPathResource("rules/PieczywoRules.drl"));
         kieFileSystem.write(ResourceFactory.newClassPathResource("rules/NapojeRules.drl"));
+        kieFileSystem.write(ResourceFactory.newClassPathResource("rules/ElektronikaRules.drl"));
+        kieFileSystem.write(ResourceFactory.newClassPathResource("rules/OwoceRules.drl"));
+        kieFileSystem.write(ResourceFactory.newClassPathResource("rules/WarzywaRules.drl"));
         KieBuilder kieBuilder = kieServices.newKieBuilder(kieFileSystem);
         kieBuilder.buildAll();
         KieModule kieModule = kieBuilder.getKieModule();

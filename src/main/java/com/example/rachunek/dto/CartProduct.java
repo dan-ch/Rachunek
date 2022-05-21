@@ -25,6 +25,8 @@ public class CartProduct {
 
     private Integer quantity;
 
+    //TODO ilosc rozliczonych
+
     private TaxValues tax;
 
     private BigDecimal discount;
@@ -106,5 +108,19 @@ public class CartProduct {
 
     public BigDecimal getDiscountedPrice() {
         return grossPrice.subtract(discount);
+    }
+
+    @Override
+    public String toString() {
+        return "CartProduct{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", category=" + category +
+            ", netPrice=" + netPrice +
+            ", grossPrice=" + grossPrice +
+            ", quantity=" + quantity +
+            ", tax=" + tax +
+            ", discount=" + discount +
+            '}';
     }
 }

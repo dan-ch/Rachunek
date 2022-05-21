@@ -1,5 +1,6 @@
 import com.example.rachunek.dto.Cart
 import com.example.rachunek.dto.CartProduct
+import com.example.rachunek.model.ProductCategory
 import java.math.BigDecimal;
 
 dialect "mvel"
@@ -9,14 +10,22 @@ rule "Discount for products while payment above 1000"
     then cart.setDiscount(BigDecimal.valueOf(10D));
 end;
 
-rule "Czy istnieje produkt o nazwie Kokaina" salience 30
-    when cart: Cart(getProductByName("Kokaina"))
-    then
+rule "Rabat na wodę gazowaną"
+    when cartProduct: CartProduct(getName().equals("Woda gazowana"))
+    then cartProduct.setDiscount(BigDecimal.valueOf(50D));
 end;
-//TODO mapa na liste zwykla
-//rule "Czy istnieje produkt o nazwie Kokaina" salience 20
-//    when product: Product(name="kox")
-//    then
+
+rule "Rabat jezeli zostało kupione 6x woda gazowana"
+    when cartProduct: CartProduct(getName().equals("Woda gazowana"), getQuantity() >= 6)
+    then cartProduct.setDiscount(BigDecimal.valueOf(Math.floor(cartProduct.getQuantity() %6) * 0.5));
+end;
+//
+//rule "Rabat jezeli zostało kupione 6x woda gazowana"
+//    when cart: Cart(getProducts().get(ProductCategory.Napoje))
+//    then cartProduct.setDiscount(BigDecimal.valueOf(Math.floor(cartProduct.getQuantity() %6) * 0.5));
 //end;
+
+
+//TODO mapa na liste zwykla
 
 

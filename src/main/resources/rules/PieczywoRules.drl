@@ -1,0 +1,11 @@
+import com.example.rachunek.dto.Cart
+import com.example.rachunek.model.ProductCategory
+
+import java.math.BigDecimal;
+
+dialect "mvel"
+
+rule "Rabat przy zakupie 3 produktów z kategorii pieczywo z kartą huge familly"
+    when cart: Cart(countProductsByCategory(ProductCategory.Pieczywo) >= 3)
+    then cart.setDiscount(BigDecimal.valueOf(1D));
+end;

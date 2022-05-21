@@ -3,11 +3,7 @@ package com.example.rachunek.dto;
 import com.example.rachunek.model.ProductCategory;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.*;
 
 public class Cart {
 
@@ -55,16 +51,11 @@ public class Cart {
             .subtract(discount);
     }
 
-    public Optional<CartProduct> getProductByName(String name){
-        AtomicReference<CartProduct> product = null;
-        products.values()
+    public long countProductsByCategory(ProductCategory category){
+        Optional<List<CartProduct>> productList = Optional.ofNullable(products.get(category));
+        return productList.map(cartProducts -> cartProducts
             .stream()
-            .flatMap(List::stream)
-            .forEach(cartProduct -> {
-                if(cartProduct.getName().equals(name)) {
-                    product.set(cartProduct);
-                }
-            });
-        return Optional.ofNullable(product.get());
+            .map(CartProduct::getQuantity)
+            .count()).orElse(0L);
     }
 }

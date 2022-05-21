@@ -59,16 +59,16 @@
                     <div class="col-lg-2 border border-1 text-center fw-bold">Ilość:</div>
                     <div class="col-lg-2 border border-1 text-center" th:text="${product.quantity}"></div>
                     <div class="col-lg-2 border border-1 text-center fw-bold">Cena brutto:</div>
-                    <div class="col-lg-2 border border-1 text-center" th:text="${product.grossPrice} + zł"></div>
+                    <div class="col-lg-2 border border-1 text-center" th:text="${product.grossPrice * product.quantity} + zł"></div>
                     <div class="col-lg-2 border border-1 text-center fw-bold">Podatek:</div>
                     <div class="col-lg-2 border border-1 text-center" th:text="${product.tax.getValue() + '%'}"></div>
                 </div>
                 <div class="row ">
                     <div class="col-lg-2 border border-1 text-center fw-bold">Rabat:</div>
-                    <div class="col-lg-2 border border-1 text-center" th:text="${product.discount + '%'}"></div>
+                    <div class="col-lg-2 border border-1 text-center" th:text="${product.discount + 'zł'}"></div>
                     <div class="col-lg-2 border border-1 text-center fw-bold">Cena po rabacie:</div>
                     <div class="col-lg-2 border border-1 text-center"
-                         th:text="${product.grossPrice - product.grossPrice * product.discount/100 + 'zł'}">
+                         th:text="${product.grossPrice * product.quantity - product.discount + 'zł'}">
                     </div>
                     <div class="col-lg-4 border border-1 text-center d-flex justify-content-around">
                         <a th:if="${product.quantity > 0}" class="btn btn-danger btn-md  px-4 py-0 m-1" style="min-width: 85px"
