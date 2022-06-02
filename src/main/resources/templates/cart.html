@@ -44,47 +44,48 @@
 <main class="container-md mt-4">
     <h2>Koszyk</h2>
 
-    <div class="container my-4 border border-3 rounded 2 px-2 border-secondary">
+    <div class="container my-4 border border-3 rounded 2 px-2 pb-2 border-secondary">
 
-        <div class="container" th:each="productsMap:${cart.products}">
-            <h4 th:text="${productsMap.key}"/>
-            <div class="container border border-2 rounded-2 my-3 lh-lg"  th:each="product: ${productsMap.value}">
-                <div class="row h-100">
-                    <div class="col-lg-2 border border-1 text-center fw-bold">Nazwa:</div>
-                    <div class="col-lg-4 border border-1 text-center" th:text="${product.name}"></div>
-                    <div class="col-lg-2 border border-1 text-center fw-bold">Kategoria:</div>
-                    <div class="col-lg-4 border border-1 text-center" th:text="${product.category}"></div>
-                </div>
-                <div class="row ">
-                    <div class="col-lg-2 border border-1 text-center fw-bold">Ilość:</div>
-                    <div class="col-lg-2 border border-1 text-center" th:text="${product.quantity}"></div>
-                    <div class="col-lg-2 border border-1 text-center fw-bold">Cena brutto:</div>
-                    <div class="col-lg-2 border border-1 text-center" th:text="${product.grossPrice * product.quantity} + zł"></div>
-                    <div class="col-lg-2 border border-1 text-center fw-bold">Podatek:</div>
-                    <div class="col-lg-2 border border-1 text-center" th:text="${product.tax.getValue() + '%'}"></div>
-                </div>
-                <div class="row ">
-                    <div class="col-lg-2 border border-1 text-center fw-bold">Rabat:</div>
-                    <div class="col-lg-2 border border-1 text-center" th:text="${product.discount + 'zł'}"></div>
-                    <div class="col-lg-2 border border-1 text-center fw-bold">Cena po rabacie:</div>
-                    <div class="col-lg-2 border border-1 text-center"
-                         th:text="${product.grossPrice * product.quantity - product.discount + 'zł'}">
-                    </div>
-                    <div class="col-lg-4 border border-1 text-center d-flex justify-content-around">
-                        <a th:if="${product.quantity > 0}" class="btn btn-danger btn-md  px-4 py-0 m-1" style="min-width: 85px"
-                           th:href="@{'/cart/removeProduct?id=' + ${product.id}}" role="button">Usuń z koszyka</a>
-                    </div>
-                </div>
-            </div>
+        <div class="container">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">Nazwa</th>
+                    <th scope="col">Kategoria</th>
+                    <th scope="col">Ilość</th>
+                    <th scope="col">Podatek</th>
+                    <th scope="col">Cena brutto</th>
+                    <th scope="col">Rabat</th>
+                    <th scope="col">Cena po rabacie</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="product:${cart.products}">
+                    <td th:text="${product.name}"></td>
+                    <td th:text="${product.category}"></td>
+                    <td th:text="${product.quantity}"></td>
+                    <td th:text="${product.tax.getValue() + '%'}"></td>
+                    <td th:text="${product.grossPrice * product.getQuantity()} + ' zł'"></td>
+                    <td th:text="${product.discount} + ' zł'"></td>
+                    <td th:text="${product.getDiscountedPrice()} + ' zł'"></td>
+                    <td>
+                        <a class="btn btn-danger btn-md  px-4 py-0 m-1" style="min-width: 85px"
+                           th:href="@{'/cart/removeProduct?id=' + ${product.id}}" role="button">Usuń</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
         </div>
         <h4>Suma</h4>
         <p th:text="${cart.getTotalPrice()} + zł"></p>
         <h4>Rabat na koszyk</h4>
-        <p th:text="${cart.getDiscount()} + zł"></p>
+        <p th:text="${cart.getTotalPrice()-cart.getDiscountedPrice()} + zł"></p>
         <h4>Cena po rabacie</h4>
         <p th:text="${cart.getDiscountedPrice()} + zł"></p>
 
-        <a class="btn btn-primary btn-lg" role="button" th:href="@{/cart/countDiscount}">Oblicz rabat</a>
+        <a class="btn btn-primary btn-lg" role="button" th:href="@{/cart/bill/pdf}">Drukuj rachunek</a>
     </div>
 
 </main>

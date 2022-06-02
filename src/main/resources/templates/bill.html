@@ -27,42 +27,56 @@
 
 <div class="container-sm" style="max-width: 400px">
     <div style="width: 100%; margin: 0 auto">
-        <h4 style="text-align: center">STONKA - Gutes Geschäft</h4>
-        <p style="text-align: center">Białostocka 420</p>
-        <p style="text-align: center">00-007 Warszawa</p>
+        <h4 style="text-align: center">Kartoffelkäfer - Gutes Geschäft</h4>
+        <p style="text-align: center">Weierstrasse 420</p>
+        <p style="text-align: center">2137 München</p>
         <h4 style="text-align: center">PARAGON FISKALNY</h4>
     </div>
     <table class="table-sm table-borderless" style="width: 100%">
-        <tbody>
-        <tr>
-            <td>Chlyb</td>
-            <td style="text-align: right">1x 2,99 2,99</td>
-        </tr>
-        <tr>
-            <td>Kultywator ścierniskowy</td>
-            <td style="text-align: right">2x 3,99 7,98</td>
-        </tr>
+        <tbody style="margin-bottom: 5px" th:each="product: ${cart.products}">
+            <tr >
+                <td th:text="${product.name}"></td>
+                <td th:text="${product.quantity} + 'x ' + ${product.grossPrice}" style="text-align: right"></td>
+            </tr>
+            <tr th:each="discount: ${product.discounts}">
+                <td th:text="'RABAT ' + ${discount.getName()}" style="padding-left: 20px"></td>
+                <td th:text="'-' + ${discount.getValue()}" style="text-align: right"></td>
+            </tr>
+            <tr >
+                <td></td>
+                <td style="text-align: right" th:text="${product.getDiscountedPrice()}"></td>
+            </tr>
         </tbody>
+
     </table>
     <div style="width: 100%; border-top: 1px dashed black; margin: 10px 0"></div>
             <table class="table-sm table-borderless" style="width: 100%">
                 <tbody>
-                <tr>
-                    <td>SPRZEDAŻ OPODATKOWANA</td>
-                    <td style="text-align: right">10,97</td>
-                </tr>
-                <tr>
-                    <td>PTU A 23%</td>
-                    <td style="text-align: right">4,58</td>
-                </tr>
-                <tr>
-                    <td>SUMA PTU </td>
-                    <td style="text-align: right">4,58</td>
-                </tr>
-                <tr>
-                    <td style="font-size: 16px; font-weight: 600;">SUMA PLN</td>
-                    <td style="text-align: right; font-size: 16px; font-weight: 600;"> 10,97</td>
-                </tr>
+                    <tr>
+                        <td>SPRZEDAŻ OPODATKOWANA</td>
+                        <td style="text-align: right" th:text="${cart.getDiscountedPrice()}"></td>
+                    </tr>
+                    <tr th:if="${cart.getTax('23') > 0}">
+                        <td>PTU A 23%</td>
+                        <td style="text-align: right" th:text="${cart.getTax('23')}"></td>
+                    </tr>
+                    <tr th:if="${cart.getTax('8') > 0}">
+                        <td>PTU B 8%</td>
+                        <td style="text-align: right" th:text="${cart.getTax('8')}"></td>
+                    </tr>
+                    <tr th:if="${cart.getTax('5') > 0}">
+                        <td>PTU C 5%</td>
+                        <td style="text-align: right" th:text="${cart.getTax('5')}"></td>
+                    </tr>
+
+                    <tr>
+                        <td>SUMA PTU </td>
+                        <td style="text-align: right" th:text="${cart.getTax('5') + cart.getTax('8') + cart.getTax('23')}">4,58</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 16px; font-weight: 600;">SUMA PLN</td>
+                        <td style="text-align: right; font-size: 16px; font-weight: 600;" th:text="${cart.getDiscountedPrice()}"></td>
+                    </tr>
                 </tbody>
             </table>
     <div style="width: 100%; border-top: 1px dashed black; margin: 10px 0"></div>
@@ -74,11 +88,11 @@
         </tr>
         <tr>
             <td>KARTA karta płatnicza</td>
-            <td style="text-align: right">10,97</td>
+            <td style="text-align: right" th:text="${cart.getDiscountedPrice()}"></td>
         </tr>
         <tr>
             <td>00420 #69 KIEROWNIK</td>
-            <td style="text-align: right">2022-05-10 11:06</td>
+            <td style="text-align: right" th:text="${#dates.format(#dates.createNow(), 'dd MMM yyyy HH:mm')}"></td>
         </tr>
         </tbody>
     </table>

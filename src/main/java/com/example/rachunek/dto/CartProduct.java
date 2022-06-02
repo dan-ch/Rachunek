@@ -6,6 +6,8 @@ import com.example.rachunek.model.TaxValues;
 import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.Digits;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CartProduct {
 
@@ -25,11 +27,11 @@ public class CartProduct {
 
     private Integer quantity;
 
-    //TODO ilosc rozliczonych
+    private int billedQuantity;
 
     private TaxValues tax;
 
-    private BigDecimal discount;
+    private List<Discount> discounts;
 
     public CartProduct(Long id, String name, ProductCategory category, BigDecimal netPrice, BigDecimal grossPrice, TaxValues tax) {
         this.id = id;
@@ -39,7 +41,7 @@ public class CartProduct {
         this.grossPrice = grossPrice;
         this.quantity = 1;
         this.tax = tax;
-        this.discount = new BigDecimal(0);
+        this.discounts = new ArrayList<>();
     }
 
     public Long getId() {
@@ -98,29 +100,30 @@ public class CartProduct {
         this.tax = tax;
     }
 
+    public int getBilledQuantity() {
+        return billedQuantity;
+    }
+
+    public void setBilledQuantity(int billedQuantity) {
+        this.billedQuantity = billedQuantity;
+    }
+
+    public List<Discount> getDiscounts() {
+        return discounts;
+    }
+
+    public void setDiscounts(List<Discount> discounts) {
+        this.discounts = discounts;
+    }
+
     public BigDecimal getDiscount() {
-        return discount;
+        return discounts
+            .stream()
+            .map(Discount::getValue)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
-
-    public BigDecimal getDiscountedPrice() {
-        return grossPrice.subtract(discount);
-    }
-
-    @Override
-    public String toString() {
-        return "CartProduct{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", category=" + category +
-            ", netPrice=" + netPrice +
-            ", grossPrice=" + grossPrice +
-            ", quantity=" + quantity +
-            ", tax=" + tax +
-            ", discount=" + discount +
-            '}';
+    public BigDecimal getDiscountedPrice(){
+        return grossPrice.multiply(new BigDecimal(quantity)).subtract(getDiscount());
     }
 }

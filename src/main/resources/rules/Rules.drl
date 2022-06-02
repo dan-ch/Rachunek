@@ -1,0 +1,102 @@
+import com.example.rachunek.dto.Cart
+import com.example.rachunek.dto.CartProduct
+import com.example.rachunek.model.ProductCategory
+import java.math.BigDecimal
+import com.example.rachunek.dto.Discount
+import java.math.RoundingMode;
+
+function int getAvailableItems(CartProduct cartProduct){
+    return cartProduct.getQuantity() - cartProduct.getBilledQuantity();
+}
+
+dialect "mvel"
+
+rule "Rabat jezeli zostało kupione 6x woda gazowana na max 12 sztuk"
+    when
+        cartProduct: CartProduct(getName().equals("Woda gazowana")
+            && getQuantity() >= 6
+            && getAvailableItems(cartProduct) >= 6
+        )
+    then
+        $availableItems = getAvailableItems(cartProduct);
+        cartProduct.getDiscounts().add(new Discount("Na max 12x woda gazowana", BigDecimal.valueOf($availableItems/6 >= 2 ? 4 : 2)));
+        cartProduct.setBilledQuantity(cartProduct.getBilledQuantity() + $availableItems);
+end;
+
+rule "Masz coś zdrowego za free"
+    when
+        cola: CartProduct(getName().equals("Coca-cola") && getQuantity() >= 3)
+        smoothie: CartProduct(getName().equals("Smoothie") && getAvailableItems(cola) >= 1)
+    then
+        smoothie.getDiscounts().add(new Discount("coś zrdowego za free", smoothie.getGrossPrice()));
+        smoothie.setQuantity(smoothie.getBilledQuantity() + 1);
+        cola.setQuantity(cola.getBilledQuantity() + 3);
+end
+
+rule "Extra chlebuś"
+    when
+        chleb: CartProduct(getName().equals("Chleb razowy") && getQuantity() == 3)
+    then
+        chleb.setQuantity(chleb.getQuantity() + 1);
+        chleb.getDiscounts().add(new Discount("darmowy chleb", chleb.getGrossPrice()));
+        chleb.setBilledQuantity(chleb.getQuantity());
+end
+
+
+rule "Elektronika bez vatu"
+    when
+        cartProduct: CartProduct(getCategory().equals(ProductCategory.Elektronika))
+    then
+        cartProduct.getDiscounts().add(new Discount("Elektro. bez vat",
+        (cartProduct.getGrossPrice().subtract(cartProduct.getNetPrice())).multiply(BigDecimal.valueOf(cartProduct.getQuantity())
+        )));
+        cartProduct.setBilledQuantity(cartProduct.getBilledQuantity() + cartProduct.getQuantity());
+end
+
+
+rule "Rabat na zestaw budowlany"
+    when
+        bulka: CartProduct(getName().equals("Bułka kajzerka")
+            && getAvailableItems(bulka) >= 1
+        )
+        harnas: CartProduct(getName().equals("Harnaś Lodoherbata")
+            && getAvailableItems(harnas) >= 1
+        )
+        pomidor: CartProduct(getName().equals("Pomidor")
+                    && getAvailableItems(pomidor) >= 1
+        )
+    then
+        bulka.getDiscounts().add(new Discount("zestaw budowlany", BigDecimal.valueOf(0.10)));
+        harnas.getDiscounts().add(new Discount("zestaw budowlany", BigDecimal.valueOf(0.10)));
+        pomidor.getDiscounts().add(new Discount("zestaw budowlany", pomidor.getGrossPrice().multiply(BigDecimal.valueOf(0.1)).setScale(2, RoundingMode.HALF_UP)));
+        bulka.setBilledQuantity(bulka.getBilledQuantity() + 1);
+        harnas.setBilledQuantity(harnas.getBilledQuantity() + 1);
+        pomidor.setBilledQuantity(pomidor.getBilledQuantity() + 1);
+end;
+
+rule "vege zestaw"
+    when
+        ogorek: CartProduct(getName().equals("Ogórek gruntowy")
+            && getQuantity() >= 4
+            && getAvailableItems(ogorek) >= 4
+        )
+        szczypior: CartProduct(getName().equals("Szczypior")
+            && getQuantity() >= 1
+            && getAvailableItems(szczypior) >= 1
+        )
+    then
+        $availableItems = getAvailableItems(ogorek);
+        ogorek.getDiscounts().add(new Discount("vege zestaw max. 12 ogórków", $availableItems/12 == 1
+         ? ogorek.getGrossPrice().multiply(BigDecimal.valueOf(0.3)).multiply(new BigDecimal(12))
+         : ogorek.getGrossPrice().multiply(BigDecimal.valueOf($availableItems/4).multiply(BigDecimal.valueOf(0.1))).multiply(new BigDecimal($availableItems/4 * 4))));
+        szczypior.getDiscounts().add(new Discount("vege zestaw", BigDecimal.valueOf(0.50)));
+        ogorek.setBilledQuantity((ogorek.getBilledQuantity() + $availableItems/4 * 4));
+        szczypior.setBilledQuantity((szczypior.getBilledQuantity() + 1));
+end;
+
+
+
+
+
+
+

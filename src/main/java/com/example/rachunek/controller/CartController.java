@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_PDF;
@@ -38,6 +40,7 @@ public class CartController {
 
     @GetMapping
     public String cartProducts(Model model, @ModelAttribute("cart") Cart cart){
+        countDiscounts(cart);
         model.addAttribute("cart", cart);
         return "cart";
     }
@@ -75,19 +78,15 @@ public class CartController {
                 .body(new InputStreamResource(bis));
     }
 
-
-
-    @GetMapping("/countDiscount")
-    public String removeProductFromCart(@ModelAttribute("cart") Cart cart){
+    public void countDiscounts(Cart cart){
         KieSession session = kieContainer.newKieSession();
-        for (List<CartProduct> productsList : cart.getProducts().values()){
-            for (CartProduct product : productsList) {
+        for (CartProduct product : cart.getProducts()){
+                product.setDiscounts(new ArrayList<>());
+                product.setBilledQuantity(0);
                 session.insert(product);
             }
-        }
         session.insert(cart);
         session.fireAllRules();
-        return "cart";
     }
 
     @ModelAttribute("cart")
