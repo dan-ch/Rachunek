@@ -80,8 +80,12 @@ rule "szczypior 30% taniej"
             && getAvailableItems(szczypior) >= 1
         )
     then
-        szczypior.getDiscounts().add(new Discount("szczypior 30% taniej", szczypior.getGrossPrice().multiply(BigDecimal.valueOf(0.3)).setScale(2, RoundingMode.HALF_UP)));
-        szczypior.setBilledQuantity(szczypior.getBilledQuantity() + 1);
+        szczypior.getDiscounts().add(new Discount("szczypior 30% taniej", szczypior.getGrossPrice()
+        .multiply(BigDecimal.valueOf(0.3))
+        .multiply(new BigDecimal(getAvailableItems(szczypior)))
+        .setScale(2, RoundingMode.HALF_UP))
+        );
+        szczypior.setBilledQuantity(szczypior.getBilledQuantity() + getAvailableItems(szczypior));
 end;
 
 rule "przetowry na zimę"
