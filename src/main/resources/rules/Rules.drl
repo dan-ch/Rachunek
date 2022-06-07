@@ -28,14 +28,14 @@ rule "Masz coś zdrowego za free"
         cola: CartProduct(getName().equals("Coca-cola") && getQuantity() >= 3)
         smoothie: CartProduct(getName().equals("Smoothie") && getAvailableItems(cola) >= 1)
     then
-        smoothie.getDiscounts().add(new Discount("coś zrdowego za free", smoothie.getGrossPrice()));
-        smoothie.setQuantity(smoothie.getBilledQuantity() + 1);
-        cola.setQuantity(cola.getBilledQuantity() + 3);
+        smoothie.getDiscounts().add(new Discount("coś zdrowego za free", smoothie.getGrossPrice()));
+        smoothie.setBilledQuantity(smoothie.getBilledQuantity() + 1);
+        cola.setBilledQuantity(cola.getBilledQuantity() + 3);
 end
 
 rule "Extra chlebuś"
     when
-        chleb: CartProduct(getName().equals("Chleb razowy") && getQuantity() == 3)
+        chleb: CartProduct(getName().equals("Chleb razowy") && getQuantity() >= 3)
     then
         chleb.setQuantity(chleb.getQuantity() + 1);
         chleb.getDiscounts().add(new Discount("darmowy chleb", chleb.getGrossPrice()));
@@ -47,7 +47,7 @@ rule "Elektronika bez vatu"
     when
         cartProduct: CartProduct(getCategory().equals(ProductCategory.Elektronika))
     then
-        cartProduct.getDiscounts().add(new Discount("Elektro. bez vat",
+        cartProduct.getDiscounts().add(new Discount("elektro. bez vat",
         (cartProduct.getGrossPrice().subtract(cartProduct.getNetPrice())).multiply(BigDecimal.valueOf(cartProduct.getQuantity())
         )));
         cartProduct.setBilledQuantity(cartProduct.getBilledQuantity() + cartProduct.getQuantity());
@@ -74,7 +74,7 @@ rule "Rabat na zestaw budowlany"
         pomidor.setBilledQuantity(pomidor.getBilledQuantity() + 1);
 end;
 
-rule "vege zestaw"
+rule "Vege zestaw"
     when
         ogorek: CartProduct(getName().equals("Ogórek gruntowy")
             && getQuantity() >= 4
