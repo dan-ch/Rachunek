@@ -74,24 +74,28 @@ rule "Rabat na zestaw budowlany"
         pomidor.setBilledQuantity(pomidor.getBilledQuantity() + 1);
 end;
 
-rule "Vege zestaw"
+rule "szczypior 30% taniej"
+    when
+        szczypior: CartProduct(getName().equals("Szczypior")
+            && getAvailableItems(szczypior) >= 1
+        )
+    then
+        szczypior.getDiscounts().add(new Discount("szczypior 30% taniej", szczypior.getGrossPrice().multiply(BigDecimal.valueOf(0.3)).setScale(2, RoundingMode.HALF_UP)));
+        szczypior.setBilledQuantity(szczypior.getBilledQuantity() + 1);
+end;
+
+rule "przetowry na zimę"
     when
         ogorek: CartProduct(getName().equals("Ogórek gruntowy")
             && getQuantity() >= 4
             && getAvailableItems(ogorek) >= 4
-        )
-        szczypior: CartProduct(getName().equals("Szczypior")
-            && getQuantity() >= 1
-            && getAvailableItems(szczypior) >= 1
         )
     then
         $availableItems = getAvailableItems(ogorek);
         ogorek.getDiscounts().add(new Discount("vege zestaw max. 12 ogórków", $availableItems/12 == 1
          ? ogorek.getGrossPrice().multiply(BigDecimal.valueOf(0.3)).multiply(new BigDecimal(12))
          : ogorek.getGrossPrice().multiply(BigDecimal.valueOf($availableItems/4).multiply(BigDecimal.valueOf(0.1))).multiply(new BigDecimal($availableItems/4 * 4))));
-        szczypior.getDiscounts().add(new Discount("vege zestaw", BigDecimal.valueOf(0.50)));
         ogorek.setBilledQuantity((ogorek.getBilledQuantity() + $availableItems/4 * 4));
-        szczypior.setBilledQuantity((szczypior.getBilledQuantity() + 1));
 end;
 
 
